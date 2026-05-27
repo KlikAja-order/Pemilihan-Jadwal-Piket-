@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jadwal Piket Juni 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            --card-bg: #ffffff;
+            --card-border: 1px solid #e2e8f0;
+            
+            --primary: #10b981;
+            --primary-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            --primary-dark: #065f46;
+            --primary-light: rgba(16, 185, 129, 0.06);
+            
+            --sunday-bg: #f1f5f9;
+            --sunday-text: #94a3b8;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 12px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin-bottom: 40px;
+            display: none;
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .container.authorized {
+            display: block;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: var(--card-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Top Action Bar */
+        .top-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .admin-trigger-btn {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* User Info Bar */
+        .user-bar {
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info-row span {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .user-info-row strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: #f1f5f9;
+            border: none;
+            color: #ef4444;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .quota-container {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quota-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .user-quota-badge {
+            font-size: 0.8rem;
+            background: #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Header Kalender */
+        .header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 1px;
+        }
+
+        /* Calendar Grid Setup */
+        .calendar-card {
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        /* CELL UTAMA */
+        .cell {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            aspect-ratio: 1 / 1.1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell:hover:not(.disabled) {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .date-num {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Indikator Bulatan */
+        .dot-container {
+            display: flex;
+            gap: 3px;
+            margin-top: 4px;
+            height: 5px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .dot.filled {
+            background: var(--primary);
+        }
+
+        .cell.empty { border: none; background: transparent; pointer-events: none; }
+        .cell.sunday { background-color: var(--sunday-bg); border-color: transparent; }
+        .cell.sunday .date-num { color: var(--sunday-text); }
+        .cell.user-booked { background-color: var(--primary-light); border-color: var(--primary); }
+        .cell.fully-booked { background-color: #f8fafc; border-color: #e2e8f0; }
+
+        /* Modal Base Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 360px;
+            padding: 26px;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+
+        .modal-card h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main); }
+        .modal-card p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; }
+
+        /* Team Box style */
+        .piket-team-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .team-slot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .team-slot.filled-secure {
+            border-color: #e2e8f0;
+            background: #f8fafc;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Admin Config Controls */
+        .admin-config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .config-group label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 700;
+            outline: none;
+            background: #f8fafc;
+            text-align: center;
+        }
+
+        .input-control:focus { border-color: var(--primary); background: #ffffff; }
+
+        /* Admin Dashboard Detail Management */
+        .admin-scroll-area {
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .admin-date-row {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .admin-date-header {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .admin-slot-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            padding-left: 4px;
+        }
+
+        .delete-member-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .btn-stack { display: flex; flex-direction: column; gap: 8px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: var(--radius-md); font-size: 0.92rem; font-weight: 700; cursor: pointer; }
+        .btn-primary { background: var(--primary-gradient); color: white; }
+        .btn-secondary { background: #f1f5f9; color: var(--text-muted); }
+        .btn-print { background: #0f172a; color: white; margin-bottom: 4px; }
+
+        /* STYLING KHUSUS CETAKAN DOWNLOAD (EXPORT) ENGINE */
+        .print-only-container {
+            width: 600px;
+            padding: 24px;
+            background: #f1f5f9;
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        .print-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .print-cell {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 6px;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .print-date { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; color: #0f172a; text-align: center;}
+        .print-name-tag {
+            background: #e6f4ea;
+            color: #137333;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .print-empty-tag {
+            border: 1px dashed #cbd5e1;
+            color: #94a3b8;
+            font-size: 0.72rem;
+            padding: 4px;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="admin-pin-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Verifikasi PIN Admin</h2>
+            <p>Masukkan PIN khusus pengelola untuk masuk menu managemen.</p>
+            <input type="password" id="admin-pin-input" class="input-control" placeholder="****" style="margin-bottom: 16px;" maxlength="8">
+            <div class="btn-stack">
+                <button id="admin-pin-submit" class="btn btn-primary">Masuk Admin</button>
+                <button id="admin-pin-cancel" class="btn btn-secondary">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-dashboard-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 400px;">
+            <h2>Panel Kontrol Admin</h2>
+            <p>Atur parameter sistem dan verifikasi anggota tim.</p>
+
+            <div class="admin-config-grid">
+                <div class="config-group">
+                    <label>Minimal Isi (Hari)</label>
+                    <input type="number" id="cfg-min-input" class="input-control" min="1" max="10">
+                </div>
+                <div class="config-group">
+                    <label>Maksimal Isi (Hari)</label>
+                    <input type="number" id="cfg-max-input" class="input-control" min="1" max="10">
+                </div>
+            </div>
+
+            <div class="admin-scroll-area" id="admin-management-list">
+                </div>
+
+            <div class="btn-stack">
+                <button id="download-btn-admin" class="btn btn-print">📸 Download Gambar Jadwal (Full Nama)</button>
+                <button id="admin-save-config-btn" class="btn btn-primary">Simpan Semua Perubahan</button>
+                <button id="admin-logout-btn" class="btn btn-secondary">Keluar Panel Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Siapa Nama Anda?</h2>
+            <p>Masukkan nama panggilan Anda untuk mengisi daftar kuota piket hub.</p>
+            <input type="text" id="username-input" class="input-control" placeholder="Contoh: Khairul" autocomplete="off" style="margin-bottom: 16px;">
+            <button id="login-submit" class="btn btn-primary">Masuk Aplikasi</button>
+        </div>
+    </div>
+
+    <div class="top-action-bar" style="max-width: 480px; width: 100%;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">POLLING JADWAL PIKET SS BLHR0</span>
+        <button id="admin-trigger" class="admin-trigger-btn">⚙️ Menu Admin</button>
+    </div>
+
+    <div id="app-content" class="container">
+        <div class="user-bar glass-card">
+            <div class="user-info-row">
+                <span>Halo, <strong id="user-display">User</strong>! 👋</span>
+                <button id="logout-trigger" class="logout-btn">Ganti Nama</button>
+            </div>
+            <div class="quota-container">
+                <span class="quota-label">Progress Pilihan Anda</span>
+                <span id="user-quota-wrapper" class="user-quota-badge">
+                    <span id="user-count-badge">0</span> / <span id="label-max-quota">5</span> Hari
+                </span>
+            </div>
+        </div>
+
+        <div id="calendar-capture-area" style="padding: 2px;">
+            <div class="header glass-card">
+                <button class="nav-btn" type="button" style="visibility: hidden;">◀</button>
+                <h1>JUNI 2026</h1>
+                <button class="nav-btn" type="button" style="visibility: hidden;">▶</button>
+            </div>
+
+            <div class="calendar-card glass-card">
+                <div class="days-grid">
+                    <div>MIN</div><div>SEN</div><div>SEL</div><div>RAB</div><div>KAM</div><div>JUM</div><div>SAB</div>
+                </div>
+                <div id="calendar-days" class="calendar-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detail-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 id="modal-date-title">Tanggal 00 Juni 2026</h2>
+            <p>Status slot pengisian tim saat ini:</p>
+            
+            <div class="piket-team-box" id="modal-team-list"></div>
+
+            <div class="btn-stack">
+                <button id="action-btn-main" class="btn btn-primary">Ambil Hari Ini</button>
+                <button id="close-modal-btn" class="btn btn-secondary">Kembali</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="hidden-print-area" class="print-only-container">
+        <h2 style="text-align: center; margin-bottom: 6px; font-weight: 800; color: #0f172a; font-size: 1.6rem;">JADWAL PIKET TIM - JUNI 2026</h2>
+        <p style="text-align: center; margin-bottom: 20px; color: #64748b; font-weight: 600; font-size: 0.9rem;">Data Terupdate Full Sinkronisasi Sistem</p>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; font-weight: 800; font-size: 0.8rem; margin-bottom: 10px; color: #64748b;">
+            <div>MIN</div><div>SEN</div><div>SEL</div><div>RAB</div><div>KAM</div><div>JUM</div><div>SAB</div>
+        </div>
+        <div id="print-calendar-days" class="print-grid"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+        // Firebase Configuration Berdasarkan Data Asli Milik Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyDr0m8GUDu-l20L5M8k4ZFT5shkv1XXbQs",
+            authDomain: "piket-blhr0.firebaseapp.com",
+            databaseURL: "https://piket-blhr0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "piket-blhr0",
+            storageBucket: "piket-blhr0.firebasestorage.app",
+            messagingSenderId: "693944395547",
+            appId: "1:693944395547:web:1114122c6f7b45cd3315be"
+        };
+
+        // Inisialisasi Aplikasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // MASTER PASSWORD PIN SECURITY ADMIN (Silakan ganti jika perlu)
+        const ADMIN_PIN_SECRET = "1234"; 
+
+        // State Global Sistem
+        let configSystem = { minQuota: 4, maxQuota: 5 };
+        let currentUser = localStorage.getItem('piket_user') || '';
+        let selectedDate = null;
+        let globalScheduleData = {}; 
+        let userSelectedCount = 0;
+
+        const TOTAL_DAYS = 30; 
+        const START_DAY_INDEX = 1; // 1 Juni 2026 = Senin
+
+        // DOM Elements Mapping
+        const loginModal = document.getElementById('login-modal');
+        const usernameInput = document.getElementById('username-input');
+        const loginSubmit = document.getElementById('login-submit');
+        const appContent = document.getElementById('app-content');
+        const userDisplay = document.getElementById('user-display');
+        const userCountBadge = document.getElementById('user-count-badge');
+        const userQuotaWrapper = document.getElementById('user-quota-wrapper');
+        const calendarDays = document.getElementById('calendar-days');
+        const logoutTrigger = document.getElementById('logout-trigger');
+        const labelMaxQuota = document.getElementById('label-max-quota');
+        
+        const detailModal = document.getElementById('detail-modal');
+        const modalDateTitle = document.getElementById('modal-date-title');
+        const modalTeamList = document.getElementById('modal-team-list');
+        const actionBtnMain = document.getElementById('action-btn-main');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        const adminTrigger = document.getElementById('admin-trigger');
+        const adminPinModal = document.getElementById('admin-pin-modal');
+        const adminPinInput = document.getElementById('admin-pin-input');
+        const adminPinSubmit = document.getElementById('admin-pin-submit');
+        const adminPinCancel = document.getElementById('admin-pin-cancel');
+        const adminDashboardModal = document.getElementById('admin-dashboard-modal');
+        const cfgMinInput = document.getElementById('cfg-min-input');
+        const cfgMaxInput = document.getElementById('cfg-max-input');
+        const adminManagementList = document.getElementById('admin-management-list');
+        const adminSaveConfigBtn = document.getElementById('admin-save-config-btn');
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const downloadBtnAdmin = document.getElementById('download-btn-admin');
+
+        // Jalankan Pengecekan Login Awal
+        checkAuth();
+        setupEventListeners();
+
+        // REALTIME LISTENER: Menyimak data dari Firebase secara otomatis saat ada perubahan data
+        onValue(ref(db, 'piket_system'), (snapshot) => {
+            const serverData = snapshot.val() || {};
+            
+            // Sinkronisasi Konfigurasi Batas Minimal Maksimal dari Server Cloud
+            if (serverData.config) {
+                configSystem.minQuota = parseInt(serverData.config.minQuota) || 4;
+                configSystem.maxQuota = parseInt(serverData.config.maxQuota) || 5;
+            }
+            
+            // Sinkronisasi Data Pengisian Jadwal Piket Anggota
+            globalScheduleData = serverData.schedules || {};
+            
+            // Refresh UI secara instan jika user sudah login nama
+            if (currentUser) {
+                runSystemPipeline();
+            }
+        });
+
+        function checkAuth() {
+            if (currentUser) {
+                loginModal.classList.remove('active');
+                appContent.classList.add('authorized');
+                userDisplay.textContent = currentUser;
+            } else {
+                appContent.classList.remove('authorized');
+                loginModal.classList.add('active');
+            }
+        }
+
+        function setupEventListeners() {
+            loginSubmit.addEventListener('click', handleLogin);
+            logoutTrigger.addEventListener('click', () => {
+                localStorage.removeItem('piket_user');
+                currentUser = ''; checkAuth();
+            });
+            closeModalBtn.addEventListener('click', () => { detailModal.classList.remove('active'); selectedDate = null; });
+            actionBtnMain.addEventListener('click', executeBooking);
+            downloadBtnAdmin.addEventListener('click', downloadCalendarImage);
+
+            adminTrigger.addEventListener('click', () => { adminPinInput.value = ''; adminPinModal.classList.add('active'); });
+            adminPinCancel.addEventListener('click', () => adminPinModal.classList.remove('active'));
+            adminPinSubmit.addEventListener('click', verifyAdminPin);
+            adminLogoutBtn.addEventListener('click', () => adminDashboardModal.classList.remove('active'));
+            adminSaveConfigBtn.addEventListener('click', saveAdminConfiguration);
+        }
+
+        function handleLogin() {
+            const name = usernameInput.value.trim();
+            if (!name) { alert('Nama panggilan wajib diisi!'); return; }
+            localStorage.setItem('piket_user', name);
+            currentUser = name; usernameInput.value = ''; checkAuth();
+            runSystemPipeline();
+        }
+
+        function runSystemPipeline() {
+            labelMaxQuota.textContent = configSystem.maxQuota;
+            calculateUserQuota();
+            renderCalendar();
+            if (adminDashboardModal.classList.contains('active')) {
+                renderAdminManagementList();
+            }
+        }
+
+        function calculateUserQuota() {
+            userSelectedCount = 0;
+            Object.values(globalScheduleData).forEach(slots => {
+                if (Array.isArray(slots)) {
+                    if (slots.some(name => name.toLowerCase() === currentUser.toLowerCase())) { userSelectedCount++; }
+                }
+            });
+            userCountBadge.textContent = userSelectedCount;
+            
+            if (userSelectedCount >= configSystem.minQuota) {
+                userQuotaWrapper.style.backgroundColor = '#10b981';
+                userQuotaWrapper.style.color = '#ffffff';
+            } else {
+                userQuotaWrapper.style.backgroundColor = '#e2e8f0';
+                userQuotaWrapper.style.color = 'var(--text-main)';
+            }
+        }
+
+        function renderCalendar() {
+            calendarDays.innerHTML = '';
+            for (let i = 0; i < START_DAY_INDEX; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'cell empty'; calendarDays.appendChild(emptyCell);
+            }
+            for (let date = 1; date <= TOTAL_DAYS; date++) {
+                const cell = document.createElement('div');
+                const currentDayIndex = (START_DAY_INDEX + date - 1) % 7;
+                const dateNumSpan = document.createElement('span');
+                dateNumSpan.className = 'date-num'; dateNumSpan.textContent = date; cell.appendChild(dateNumSpan);
+
+                const dotContainer = document.createElement('div');
+                dotContainer.className = 'dot-container';
+                const slots = globalScheduleData[date] || [];
+                const userAlreadyHere = slots.some(name => name.toLowerCase() === currentUser.toLowerCase());
+
+                for (let i = 0; i < 2; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = slots[i] ? 'dot filled' : 'dot';
+                    dotContainer.appendChild(dot);
+                }
+
+                if (currentDayIndex === 0) {
+                    cell.className = 'cell sunday disabled'; dotContainer.innerHTML = '';
+                    cell.addEventListener('click', () => alert('Hari Minggu Libur Piket Hub.'));
+                } else if (userAlreadyHere) {
+                    cell.className = 'cell user-booked'; cell.appendChild(dotContainer);
+                    cell.addEventListener('click', () => openDetailModal(date));
+                } else if (slots.length >= 2) {
+                    cell.className = 'cell fully-booked'; cell.appendChild(dotContainer);
+                    cell.addEventListener('click', () => openDetailModal(date));
+                } else {
+                    cell.className = 'cell available'; cell.appendChild(dotContainer);
+                    cell.addEventListener('click', () => openDetailModal(date));
+                }
+                calendarDays.appendChild(cell);
+            }
+        }
+
+        function openDetailModal(date) {
+            selectedDate = date;
+            modalDateTitle.textContent = `${date} Juni 2026`;
+            modalTeamList.innerHTML = '';
+
+            const slots = globalScheduleData[date] || [];
+            const userAlreadyHere = slots.some(name => name.toLowerCase() === currentUser.toLowerCase());
+            
+            // CEK OTORISASI: Kunci nama orang lain akan terbuka otomatis jika user patuh menginput >= minimal batas admin
+            const isUserAuthorizedToSeeNames = userSelectedCount >= configSystem.minQuota;
+
+            for (let i = 0; i < 2; i++) {
+                const row = document.createElement('div');
+                if (slots[i]) {
+                    const isItMe = slots[i].toLowerCase() === currentUser.toLowerCase();
+                    if (isItMe || isUserAuthorizedToSeeNames) {
+                        row.className = 'team-slot';
+                        row.innerHTML = `<span>✓ ${slots[i]} ${isItMe ? '(Anda)' : ''}</span>`;
+                    } else {
+                        row.className = 'team-slot filled-secure';
+                        row.innerHTML = `<span>🔒 Slot Terisi Rekan Tim</span>`;
+                    }
+                } else {
+                    row.className = 'team-slot empty-slot';
+                    row.innerHTML = `<span>- Slot Masih Kosong -</span>`;
+                }
+                modalTeamList.appendChild(row);
+            }
+
+            if (userAlreadyHere) {
+                actionBtnMain.style.display = 'none';
+            } else if (slots.length >= 2) {
+                actionBtnMain.style.display = 'block'; actionBtnMain.className = 'btn btn-secondary';
+                actionBtnMain.textContent = 'Slot Sudah Penuh'; actionBtnMain.disabled = true;
+            } else if (userSelectedCount >= configSystem.maxQuota) {
+                actionBtnMain.style.display = 'block'; actionBtnMain.className = 'btn btn-secondary';
+                actionBtnMain.textContent = `Maksimal kuota ${configSystem.maxQuota} hari`; actionBtnMain.disabled = true;
+            } else {
+                actionBtnMain.style.display = 'block'; actionBtnMain.className = 'btn btn-primary';
+                actionBtnMain.textContent = 'Ambil Hari Ini'; actionBtnMain.disabled = false;
+            }
+            detailModal.classList.add('active');
+        }
+
+        // WRITE ACTION: Kirim data tanggal piket terpilih ke Cloud Database Firebase
+        function executeBooking() {
+            if (!selectedDate) return;
+            let slots = globalScheduleData[selectedDate] || [];
+            const userAlreadyHere = slots.some(name => name.toLowerCase() === currentUser.toLowerCase());
+            
+            if (slots.length < 2 && !userAlreadyHere) {
+                slots.push(currentUser);
+                
+                set(ref(db, `piket_system/schedules/${selectedDate}`), slots)
+                .then(() => {
+                    detailModal.classList.remove('active');
+                    alert(`Sukses mengunci jadwal tanggal ${selectedDate} Juni 2026.`);
+                })
+                .catch((error) => alert("Gagal koneksi ke Cloud: " + error.message));
+                
+            } else { alert('Gagal mengambil slot.'); }
+            selectedDate = null;
+        }
+
+        function verifyAdminPin() {
+            if (adminPinInput.value === ADMIN_PIN_SECRET) {
+                adminPinModal.classList.remove('active'); openAdminDashboard();
+            } else { alert('PIN Salah!'); }
+        }
+
+        function openAdminDashboard() {
+            cfgMinInput.value = configSystem.minQuota;
+            cfgMaxInput.value = configSystem.maxQuota;
+            renderAdminManagementList(); adminDashboardModal.classList.add('active');
+        }
+
+        function renderAdminManagementList() {
+            adminManagementList.innerHTML = '';
+            let hasData = false;
+            for (let date = 1; date <= TOTAL_DAYS; date++) {
+                const slots = globalScheduleData[date] || [];
+                if (slots.length > 0) {
+                    hasData = true;
+                    const rowContainer = document.createElement('div');
+                    rowContainer.className = 'admin-date-row';
+                    rowContainer.innerHTML = `<span class="admin-date-header">Tanggal ${date} Juni</span>`;
+                    slots.forEach((name, index) => {
+                        const line = document.createElement('div'); line.className = 'admin-slot-line';
+                        line.innerHTML = `<span>👤 ${name}</span> <button class="delete-member-btn" data-date="${date}" data-index="${index}">❌ Hapus</button>`;
+                        rowContainer.appendChild(line);
+                    });
+                    adminManagementList.appendChild(rowContainer);
+                }
+            }
+            
+            // Masang trigger aksi klik hapus personil untuk Admin
+            document.querySelectorAll('.delete-member-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetDate = e.target.getAttribute('data-date');
+                    const targetIndex = parseInt(e.target.getAttribute('data-index'));
+                    deleteSlotByAdmin(targetDate, targetIndex);
+                });
+            });
+
+            if (!hasData) adminManagementList.innerHTML = `<p style="padding: 16px; color: var(--text-muted); text-align:center;">Belum ada data pengisian piket.</p>`;
+        }
+
+        // WRITE ACTION: Hapus nama tim dari Cloud Database Firebase melalui Panel Kontrol Admin
+        function deleteSlotByAdmin(date, index) {
+            if (confirm(`Hapus personil dari tanggal ${date}?`)) {
+                let slots = globalScheduleData[date] || [];
+                slots.splice(index, 1);
+                
+                const targetRef = ref(db, `piket_system/schedules/${date}`);
+                
+                if (slots.length === 0) {
+                    set(targetRef, null); 
+                } else {
+                    set(targetRef, slots); 
+                }
+            }
+        }
+
+        // WRITE ACTION: Update batas minimal / maksimal kuota secara massal ke Firebase Cloud
+        function saveAdminConfiguration() {
+            const minV = parseInt(cfgMinInput.value); const maxV = parseInt(cfgMaxInput.value);
+            if (minV > maxV) { alert('Batas minimal tidak boleh lebih besar dari batas maksimal!'); return; }
+            
+            set(ref(db, 'piket_system/config'), {
+                minQuota: minV,
+                maxQuota: maxV
+            }).then(() => {
+                adminDashboardModal.classList.remove('active');
+                alert('Konfigurasi batas kuota berhasil disimpan ke Server Firebase.');
+            });
+        }
+
+        function downloadCalendarImage() {
+            const printDaysContainer = document.getElementById('print-calendar-days');
+            printDaysContainer.innerHTML = '';
+
+            for (let i = 0; i < START_DAY_INDEX; i++) {
+                printDaysContainer.appendChild(document.createElement('div'));
+            }
+            for (let date = 1; date <= TOTAL_DAYS; date++) {
+                const cell = document.createElement('div'); cell.className = 'print-cell';
+                const currentDayIndex = (START_DAY_INDEX + date - 1) % 7;
+                cell.innerHTML = `<div class="print-date">${date}</div>`;
+                if (currentDayIndex === 0) {
+                    cell.style.backgroundColor = '#f1f5f9'; cell.innerHTML += `<div class="print-empty-tag" style="color: #94a3b8; border: none;">LIBUR HUB</div>`;
+                } else {
+                    const slots = globalScheduleData[date] || [];
+                    for (let i = 0; i < 2; i++) {
+                        cell.innerHTML += slots[i] ? `<div class="print-name-tag">✓ ${slots[i]}</div>` : `<div class="print-empty-tag">- Kosong -</div>`;
+                    }
+                }
+                printDaysContainer.appendChild(cell);
+            }
+
+            const captureArea = document.getElementById('hidden-print-area');
+            downloadBtnAdmin.textContent = "Sedang Memproses Gambar...";
+            setTimeout(() => {
+                html2canvas(captureArea, { backgroundColor: "#f1f5f9", scale: 2, logging: false, useCORS: true }).then(canvas => {
+                    const link = document.createElement('a'); link.download = 'REKAP-JADWAL-FULL-PIKET-2026.png';
+                    link.href = canvas.toDataURL('image/png'); link.click();
+                    downloadBtnAdmin.textContent = "📸 Download Gambar Jadwal (Full Nama)";
+                }).catch(err => { console.error(err); downloadBtnAdmin.textContent = "📸 Download Gambar Jadwal (Full Nama)"; });
+            }, 300);
+        }
+    </script>
+</body>
+</html>
