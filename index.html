@@ -402,10 +402,12 @@
         .btn-secondary { background: #f1f5f9; color: var(--text-muted); }
         .btn-print { background: #0f172a; color: white; margin-bottom: 4px; }
 
-        /* STYLING KHUSUS CETAKAN DOWNLOAD (EXPORT) ENGINE */
+        /* ============================================================== */
+        /* PERBAIKAN STYLING FIX KHUSUS CETAKAN DOWNLOAD (EXPORT) ENGINE  */
+        /* ============================================================== --> */
         .print-only-container {
-            width: 600px;
-            padding: 24px;
+            width: 780px; /* Diperlebar sedikit agar ruang kotak lebih lega */
+            padding: 28px;
             background: #f1f5f9;
             position: absolute;
             left: -9999px;
@@ -415,41 +417,56 @@
         .print-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px;
+            width: 100%;
         }
 
         .print-cell {
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 12px;
-            padding: 10px 6px;
-            min-height: 110px;
+            padding: 8px 4px;
+            min-height: 115px; /* Menjaga konsistensi tinggi kotak */
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            gap: 5px;
+            overflow: hidden; /* Mencegah elemen keluar batas */
+            word-break: break-word; /* Memaksa potong kata jika terlalu panjang */
         }
 
-        .print-date { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; color: #0f172a; text-align: center;}
+        .print-date { 
+            font-weight: 800; 
+            font-size: 1.1rem; 
+            margin-bottom: 4px; 
+            color: #0f172a; 
+            text-align: center;
+        }
+        
         .print-name-tag {
             background: #e6f4ea;
             color: #137333;
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* Font diperkecil sedikit agar muat nama panjang */
             font-weight: 700;
-            padding: 4px;
+            padding: 5px 4px;
             border-radius: 6px;
-            margin-bottom: 4px;
             text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            line-height: 1.2;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
         }
+        
         .print-empty-tag {
             border: 1px dashed #cbd5e1;
             color: #94a3b8;
-            font-size: 0.72rem;
-            padding: 4px;
+            font-size: 0.68rem;
+            padding: 5px 4px;
             text-align: center;
             border-radius: 6px;
+            line-height: 1.2;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -486,7 +503,7 @@
             </div>
 
             <div class="admin-scroll-area" id="admin-management-list">
-                </div>
+            </div>
 
             <div class="btn-stack">
                 <button id="download-btn-admin" class="btn btn-print">📸 Download Gambar Jadwal (Full Nama)</button>
@@ -567,7 +584,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-        // Firebase Configuration Berdasarkan Data Asli Milik Anda
         const firebaseConfig = {
             apiKey: "AIzaSyDr0m8GUDu-l20L5M8k4ZFT5shkv1XXbQs",
             authDomain: "piket-blhr0.firebaseapp.com",
@@ -578,14 +594,11 @@
             appId: "1:693944395547:web:1114122c6f7b45cd3315be"
         };
 
-        // Inisialisasi Aplikasi Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // MASTER PASSWORD PIN SECURITY ADMIN (Silakan ganti jika perlu)
         const ADMIN_PIN_SECRET = "1234"; 
 
-        // State Global Sistem
         let configSystem = { minQuota: 4, maxQuota: 5 };
         let currentUser = localStorage.getItem('piket_user') || '';
         let selectedDate = null;
@@ -593,9 +606,8 @@
         let userSelectedCount = 0;
 
         const TOTAL_DAYS = 30; 
-        const START_DAY_INDEX = 1; // 1 Juni 2026 = Senin
+        const START_DAY_INDEX = 1; 
 
-        // DOM Elements Mapping
         const loginModal = document.getElementById('login-modal');
         const usernameInput = document.getElementById('username-input');
         const loginSubmit = document.getElementById('login-submit');
@@ -626,24 +638,16 @@
         const adminLogoutBtn = document.getElementById('admin-logout-btn');
         const downloadBtnAdmin = document.getElementById('download-btn-admin');
 
-        // Jalankan Pengecekan Login Awal
         checkAuth();
         setupEventListeners();
 
-        // REALTIME LISTENER: Menyimak data dari Firebase secara otomatis saat ada perubahan data
         onValue(ref(db, 'piket_system'), (snapshot) => {
             const serverData = snapshot.val() || {};
-            
-            // Sinkronisasi Konfigurasi Batas Minimal Maksimal dari Server Cloud
             if (serverData.config) {
                 configSystem.minQuota = parseInt(serverData.config.minQuota) || 4;
                 configSystem.maxQuota = parseInt(serverData.config.maxQuota) || 5;
             }
-            
-            // Sinkronisasi Data Pengisian Jadwal Piket Anggota
             globalScheduleData = serverData.schedules || {};
-            
-            // Refresh UI secara instan jika user sudah login nama
             if (currentUser) {
                 runSystemPipeline();
             }
@@ -759,8 +763,6 @@
 
             const slots = globalScheduleData[date] || [];
             const userAlreadyHere = slots.some(name => name.toLowerCase() === currentUser.toLowerCase());
-            
-            // CEK OTORISASI: Kunci nama orang lain akan terbuka otomatis jika user patuh menginput >= minimal batas admin
             const isUserAuthorizedToSeeNames = userSelectedCount >= configSystem.minQuota;
 
             for (let i = 0; i < 2; i++) {
@@ -796,7 +798,6 @@
             detailModal.classList.add('active');
         }
 
-        // WRITE ACTION: Kirim data tanggal piket terpilih ke Cloud Database Firebase
         function executeBooking() {
             if (!selectedDate) return;
             let slots = globalScheduleData[selectedDate] || [];
@@ -804,14 +805,12 @@
             
             if (slots.length < 2 && !userAlreadyHere) {
                 slots.push(currentUser);
-                
                 set(ref(db, `piket_system/schedules/${selectedDate}`), slots)
                 .then(() => {
                     detailModal.classList.remove('active');
                     alert(`Sukses mengunci jadwal tanggal ${selectedDate} Juni 2026.`);
                 })
                 .catch((error) => alert("Gagal koneksi ke Cloud: " + error.message));
-                
             } else { alert('Gagal mengambil slot.'); }
             selectedDate = null;
         }
@@ -847,7 +846,6 @@
                 }
             }
             
-            // Masang trigger aksi klik hapus personil untuk Admin
             document.querySelectorAll('.delete-member-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const targetDate = e.target.getAttribute('data-date');
@@ -859,14 +857,11 @@
             if (!hasData) adminManagementList.innerHTML = `<p style="padding: 16px; color: var(--text-muted); text-align:center;">Belum ada data pengisian piket.</p>`;
         }
 
-        // WRITE ACTION: Hapus nama tim dari Cloud Database Firebase melalui Panel Kontrol Admin
         function deleteSlotByAdmin(date, index) {
             if (confirm(`Hapus personil dari tanggal ${date}?`)) {
                 let slots = globalScheduleData[date] || [];
                 slots.splice(index, 1);
-                
                 const targetRef = ref(db, `piket_system/schedules/${date}`);
-                
                 if (slots.length === 0) {
                     set(targetRef, null); 
                 } else {
@@ -875,11 +870,9 @@
             }
         }
 
-        // WRITE ACTION: Update batas minimal / maksimal kuota secara massal ke Firebase Cloud
         function saveAdminConfiguration() {
             const minV = parseInt(cfgMinInput.value); const maxV = parseInt(cfgMaxInput.value);
             if (minV > maxV) { alert('Batas minimal tidak boleh lebih besar dari batas maksimal!'); return; }
-            
             set(ref(db, 'piket_system/config'), {
                 minQuota: minV,
                 maxQuota: maxV
